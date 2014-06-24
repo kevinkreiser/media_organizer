@@ -24,12 +24,12 @@ to="$2"
 temp="$3"
 
 mkdir -p "$1" "$2" "$3"
-rm -rf "$temp/l.*" "$temp/list"
+rm -rf "$temp/l.*" "$temp/list" "$temp/*log"
 
 #check what types of files you get
 find "$from" -type f | sed -e "s/.*\.//g" | sort | uniq -c
 echo "Press ctl+C if you dont like the files you are seeing here"
-sleep 30
+sleep 10 
 
 #only take the ones you like
 find "$from" -type f | grep "JPG$\|jpg$\|MTS$\|mp4$\|MP4$" | shuf > "$temp/list"
@@ -38,11 +38,9 @@ find "$from" -type f | grep "JPG$\|jpg$\|MTS$\|mp4$\|MP4$" | shuf > "$temp/list"
 c=`wc -l $temp/list | awk '{print $1}'`
 split -l `echo "($c / $thread) + 1" | bc` -d "$temp/list" "$temp/l."
 
-exit 0
-
 #run a bunch of threads to copy the stuff over
-for f in l.*; do
-	nohup cat "$f" | xargs -n 1 -P 1 bash organize.sh "$to" 'cp' &> "$f.log" &
+for f in $temp/l.*; do
+	cat $f | xargs -n 1 -P 1 bash organize.sh $to 'cp' &> $f.log &
 done
 
 wait
@@ -53,4 +51,3 @@ t=`wc -l "$temp/list" | awk '{print $1}'`
 if [ $d -ne $t ]; then
 	echo "Warning: expected number of copies doesnt match actual"
 fi
-
