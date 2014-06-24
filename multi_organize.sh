@@ -8,15 +8,15 @@
 #THE PRESCRIBED METHOD:
 
 if [ -z "$3" ]; then
-	echo "Usage: $0 fromDir toDir tempDir [process_count=1]"
+	echo "Usage: $0 fromDir toDir tempDir [threads=1]"
 	echo "Example: $0 /media/kkreiser/9016-4EF8/ /media/kkreiser/K/family/sort/ ./temp 8"
 	exit 1
 fi
 
 if [ -z "$4" ]; then
-	thread=1
+	threads=1
 else
-	thread="$4"
+	threads="$4"
 fi
 
 from="$1"
@@ -24,30 +24,22 @@ to="$2"
 temp="$3"
 
 mkdir -p "$1" "$2" "$3"
-rm -rf "$temp/l.*" "$temp/list" "$temp/*log"
+rm -rf $temp/s.* $temp/list $temp/log_*
 
 #check what types of files you get
-find "$from" -type f | sed -e "s/.*\.//g" | sort | uniq -c
-echo "Press ctl+C if you dont like the files you are seeing here"
+find "$from" -type f -name "*.JPG" -o -name "*.jpg" -o -name "*.MTS" -o -name "*.mp4" -o -name "*.MP4" | sed -e "s/.*\.//g" | sort | uniq -c
+echo "Press ctl+c if you dont like the files types you are seeing here"
 sleep 10 
 
 #only take the ones you like
-find "$from" -type f | grep "JPG$\|jpg$\|MTS$\|mp4$\|MP4$" | shuf > "$temp/list"
-
-#split it up
-c=`wc -l $temp/list | awk '{print $1}'`
-split -l `echo "($c / $thread) + 1" | bc` -d "$temp/list" "$temp/l."
+find "$from" -type f -name "*.JPG" -o -name "*.jpg" -o -name "*.MTS" -o -name "*.mp4" -o -name "*.MP4" | shuf > "$temp/list"
 
 #run a bunch of threads to copy the stuff over
-for f in $temp/l.*; do
-	cat $f | xargs -n 1 -P 1 bash organize.sh $to 'cp' &> $f.log &
-done
-
-wait
+< "$temp/list" parallel -j$threads ./organize.sh $to 'cp' {} &> "$temp/log"
 
 #check the logs until done...
-d=`wc -l "$temp/l.*log" | tail -n 1 | awk '{print $1}'`
-t=`wc -l "$temp/list" | awk '{print $1}'`
+d=`wc -l $temp/log | awk '{print $1}'`
+t=`wc -l $temp/list | awk '{print $1}'`
 if [ $d -ne $t ]; then
 	echo "Warning: expected number of copies doesnt match actual"
 fi
