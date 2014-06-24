@@ -8,7 +8,7 @@
 #THE PRESCRIBED METHOD:
 
 if [ -z "$3" ]; then
-	echo "Usage: $0 fromDir toDir tempDir [thread_count=1]"
+	echo "Usage: $0 fromDir toDir tempDir [process_count=1]"
 	echo "Example: $0 /media/kkreiser/9016-4EF8/ /media/kkreiser/K/family/sort/ ./temp 8"
 	exit 1
 fi
