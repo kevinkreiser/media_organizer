@@ -1,3 +1,4 @@
+#!/bin/bash
 #organize them in parallel, if you dont care about what happens (ie synchronized logs)
 #find /media/K/family/queue1 -type f -print0 | xargs -0 -n 1 -P 3 bash organize.sh /media/K/family/sort 'mv' &> log.log
 
