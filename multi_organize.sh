@@ -10,7 +10,7 @@
 
 if [ -z "$3" ]; then
 	echo "Usage: $0 fromDir toDir tempDir [threads=1]"
-	echo "Example: $0 /media/kkreiser/9016-4EF8/ /media/kkreiser/K/family/sort/ ./temp 8"
+	echo "Example: $0 /media/$(id -un)/mounted_sd_card/ /media/$(id -un)/mounted_internal_drive/sorted/ ./temp 8"
 	exit 1
 fi
 
@@ -25,7 +25,7 @@ to="$2"
 temp="$3"
 
 mkdir -p "$1" "$2" "$3"
-rm -rf $temp/s.* $temp/list $temp/log_*
+rm -rf $temp/list $temp/log*
 
 #check what types of files you get
 find "$from" -type f -name "*.JPG" -o -name "*.jpg" -o -name "*.MTS" -o -name "*.mp4" -o -name "*.MP4" | sed -e "s/.*\.//g" | sort | uniq -c
