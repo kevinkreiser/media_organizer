@@ -1,12 +1,12 @@
 from PIL import Image
-import urllib2
+import urllib.request, urllib.error, urllib.parse
 from xml_to_dict import xml_to_dict
 import json
 
 #download the latest tags set from the official site
 def get_latest_tags(url):
     #something to use for downloading
-    opener = urllib2.build_opener()
+    opener = urllib.request.build_opener()
     #the latest exif tag spec
     response = opener.open(url)
     #the html
@@ -69,7 +69,7 @@ def sanitize(value):
     else:
         exif = {}
         #go through piece
-        for id, v in value.iteritems():
+        for id, v in value.items():
             #get the tag name using the id if there is no tag with this id
             tag = tags.get(id, str(id))
             #get its value whether it is a value or another dict
@@ -85,7 +85,7 @@ def get_exif(fn, flat = True):
         data = sanitize(info)
     else:
         data = {}
-        for k,v in info.iteritems():
+        for k,v in info.items():
             data[tags.get(k,str(k))] = v
     '''
     #deepen the structure so as to flatten the tag names
@@ -148,7 +148,7 @@ try:
     tags = {}
     with open('tags.json', 'r') as f:
         str_tags = json.load(f)
-        for str_k,v in str_tags.iteritems():
+        for str_k,v in str_tags.items():
             tags[int(str_k)] = v
 except:
     tags = get_latest_tags('http://www.exiv2.org/tags.html')

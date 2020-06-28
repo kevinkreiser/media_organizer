@@ -11,7 +11,7 @@ guid = ''.join(['\x17','\xee','\x8c','\x60','\xf8','\x4d','\x11','\xd9','\x8c','
 filename = ' '.join(argv[1:])
 mem = stat(filename).st_size
 if mem == 0:
-	print "Zero length file"
+	print("Zero length file")
 	exit(1)
 if mem > MAX_WINDOW:
 	mem = MAX_WINDOW
@@ -74,12 +74,12 @@ with open(filename, 'r+b') as f:
 			minute  = "%x" % ord(dhms[2])
 			second  = "%x" % ord(dhms[3])
 
-			print '%04d_%02d_%02d_%02d_%02d_%02d' % (int(year), int(month), int(day), int(hour), int(minute), int(second))
+			print('%04d_%02d_%02d_%02d_%02d_%02d' % (int(year), int(month), int(day), int(hour), int(minute), int(second)))
 			exit(0)
 
 		#if we failed to find it, show some error messages and signal
 		for m in messages:
-			print m
+			print(m)
 		exit(len(m))
 	finally:
 		'''cleanup'''

@@ -23,9 +23,9 @@ def xml_to_dict(xml):
 		# like <list><item/><item/><item/><item/><item/></list>
 		for x in l[2]:
 			d = list_to_dict(x, False)
-			for k, v in d.iteritems():
+			for k, v in d.items():
 				#we have never seen this key before so just keep the value
-				if not inside_dict.has_key(k):
+				if k not in inside_dict:
 					inside_dict[k] = v
 				#we only saw this key once before so we need to start a list of them
 				elif isinstance(inside_dict[k], dict):
@@ -35,7 +35,7 @@ def xml_to_dict(xml):
 					inside_dict[k].append(v)
 
 
-		ret = root_dict.values()[0] if ignore_root else root_dict
+		ret = list(root_dict.values())[0] if ignore_root else root_dict
 			
 		return ret
 	
@@ -65,11 +65,11 @@ def xml_to_dict(xml):
 				recentList = self.lists_stack[len(self.lists_stack) - 1]
 				attrs = recentList[len(recentList) - 1][1]
 				#see what kind of name we can use
-				keyName = u'value1'
+				keyName = 'value1'
 				#TODO: make it not fail to put something just because all the possiblities of keyName were taken
 				for i in range(1, len(keyName)):
 					#can we use this key name
-					if attrs.has_key(keyName[:i]) == False:
+					if (keyName[:i] in attrs) == False:
 						#insert it as another attribute
 						attrs[keyName[:i]] = data
 						break
