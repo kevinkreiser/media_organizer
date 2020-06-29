@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 from sys import argv
 from os import stat
 from mmap import mmap
@@ -5,7 +6,7 @@ from mmap import mmap
 MAX_WINDOW = 2097152
 
 #16 byte guid
-guid = ''.join(['\x17','\xee','\x8c','\x60','\xf8','\x4d','\x11','\xd9','\x8c','\xd6','\x08','\x00','\x20','\x0c','\x9a','\x66'])
+guid = b'\x17\xee\x8c\x60\xf8\x4d\x11\xd9\x8c\xd6\x08\x00\x20\x0c\x9a\x66'
 
 #open the file
 filename = ' '.join(argv[1:])
@@ -27,7 +28,7 @@ with open(filename, 'r+b') as f:
 		messages = []
 		while match < mem - len(guid):
 			#match position
-		        match = data.find(guid[0:14], match, mem)
+			match = data.find(guid[0:14], match, mem)
 			#fail
 			if match == -1:
 				match = data.find(guid[0:8], 0, mem)
@@ -41,13 +42,13 @@ with open(filename, 'r+b') as f:
 		
 			#find the MP part right after the guid
 			match += len(guid)
-			pos = data.find('MD', match, match + 128)
+			pos = data.find(b'MD', match, match + 128)
 			#fail
 			if pos == -1:
 				messages.append('MD...PM string directly after guid')
 				continue
 			#find the PM part reasonably close to the MP part
-			pos = data.find('PM', pos + 2, pos + 128)
+			pos = data.find(b'PM', pos + 2, pos + 128)
 			if match == -1:
 				messages.append('no PM portion of MD...PM string reasonably close')
 				continue
@@ -55,24 +56,24 @@ with open(filename, 'r+b') as f:
 			'''get all tags and all data, each tag is 1 byte for the tag and 4 bytes of data'''
 
 			match = pos + 2
-			tag_count = ord(data[match])
+			tag_count = data[match]
 			match += 1
 			tags = dict([(data[pos],list(data[pos + 1 : pos + 5])) for pos in range(match, match + tag_count * 5, 5)])
 			#need the date tags
-			if '\x19' not in tags or '\x18' not in tags:
+			if b'\x19'[0] not in tags or b'\x18'[0] not in tags:
 				messages.append('no date tags found directly after the MD...PM string')
 				continue
 
 			'''make a date and time from the tags'''
-			ym = tags['\x18']
-			year = "%x%x" % (ord(ym[1]), ord(ym[2]))
-			month = "%x" % ord(ym[3])
+			ym = tags[ord(b'\x18')]
+			year = "%x%x" % (ym[1], ym[2])
+			month = "%x" % ym[3]
 			
-			dhms = tags['\x19']
-			day  = "%x" % ord(dhms[0])
-			hour  = "%x" % ord(dhms[1])
-			minute  = "%x" % ord(dhms[2])
-			second  = "%x" % ord(dhms[3])
+			dhms = tags[ord(b'\x19')]
+			day  = "%x" % dhms[0]
+			hour  = "%x" % dhms[1]
+			minute  = "%x" % dhms[2]
+			second  = "%x" % dhms[3]
 
 			print('%04d_%02d_%02d_%02d_%02d_%02d' % (int(year), int(month), int(day), int(hour), int(minute), int(second)))
 			exit(0)

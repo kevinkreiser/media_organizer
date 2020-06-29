@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 from PIL import Image
 import urllib.request, urllib.error, urllib.parse
 from xml_to_dict import xml_to_dict

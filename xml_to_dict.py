@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 '''
 This snippet was altered from the original found here: http://code.activestate.com/recipes/522991-converting-xml-to-dict-for-a-xpath-like-access-syn/
 It's been changed so that text between nodes is also captured and so that we dont have every sub object as a list unless is appropriate (lots of the same node name repeated)

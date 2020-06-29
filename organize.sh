@@ -3,6 +3,7 @@
 #returns an alias for a file
 function get_alias
 {
+	#TODO: this isnt robust to . in the path
 	name=`echo "$1" | awk -F '.' '{print \$1}'`
 	id=`echo "$1" | awk -F '.' '{print \$2}'`
 	ext=`echo "$1" | awk -F '.' '{print \$3}'`
@@ -14,7 +15,7 @@ function get_alias
 	        id="`expr $id + 1`"
 	fi
 
-	echo $name.$id.$ext	
+	echo "$name.$id.$ext"
 }
 
 #only copy the file if it isnt already there
@@ -31,7 +32,7 @@ function safe_copy
 	if [ -f "$d" ]; then
 		#if they are different files we need to keep it
 		if [ `wc -c "$s" | sed -e "s/ .*//g"` != `wc -c "$d" | sed -e "s/ .*//g"` ] || [ "`head -c 524288 "$s" | md5sum`" != "`head -c 524288 "$d" | md5sum`" ]; then
-			name=`get_alias "$d"`
+			name=$(get_alias "$d")
 			#recurse because we want duplication check again
 			safe_copy $m $c $name $s
 		else
@@ -82,13 +83,13 @@ fi
 
 #check for exif data first
 meth="EXIF"
-date=`python EXIFdate.py "$file"`
+date=`./EXIFdate.py "$file"`
 
 #if it failed
 if [ $? -ne 0 ]; then
 	#check for mts header information
 	meth="META"
-	date=`python MTSdate.py "$file"`
+	date=`./MTSdate.py "$file"`
 	#if it failed
 	if [ $? -ne 0 ]; then
 		#see if we can get it from the file timestamps
