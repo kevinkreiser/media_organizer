@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 from sys import argv
 from os import stat
-from mmap import mmap
+from mmap import mmap, ACCESS_READ
 
 MAX_WINDOW = 2097152
 
@@ -16,9 +16,9 @@ if mem == 0:
 	exit(1)
 if mem > MAX_WINDOW:
 	mem = MAX_WINDOW
-with open(filename, 'r+b') as f:
+with open(filename, 'rb') as f:
 	#mmap the file
-	data = mmap(f.fileno(), mem)
+	data = mmap(f.fileno(), mem, access=ACCESS_READ)
 
 	try:
 		'''find the guid within the first set of video frames'''
